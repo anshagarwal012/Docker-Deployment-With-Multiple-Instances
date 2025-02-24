@@ -22,8 +22,6 @@ domains = [
     {"domain": "site16.com", "db_service": "mysql16", "db_name": "db_site16", "db_password": "pass16"},
     {"domain": "site17.com", "db_service": "mysql17", "db_name": "db_site17", "db_password": "pass17"},
     {"domain": "site18.com", "db_service": "mysql18", "db_name": "db_site18", "db_password": "pass18"},
-    {"domain": "site19.com", "db_service": "mysql19", "db_name": "db_site19", "db_password": "pass19"},
-    {"domain": "site20.com", "db_service": "mysql20", "db_name": "db_site20", "db_password": "pass20"},
 ]
 
 # Define your servers (nodes) mapping.

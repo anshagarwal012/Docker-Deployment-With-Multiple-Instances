@@ -10,40 +10,40 @@ services:
         delay: 10s
         parallelism: 2
     environment:
-    - 'DB_MAPPING={''site1.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
-      ''db_site1'', ''username'': ''user1'', ''password'': ''pass1''}, ''site2.com'':
-      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site2'', ''username'':
-      ''user2'', ''password'': ''pass2''}, ''site3.com'': {''host'': ''proxysql'',
-      ''port'': 6033, ''database'': ''db_site3'', ''username'': ''user3'', ''password'':
-      ''pass3''}, ''site4.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
-      ''db_site4'', ''username'': ''user4'', ''password'': ''pass4''}, ''site5.com'':
-      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site5'', ''username'':
-      ''user5'', ''password'': ''pass5''}, ''site6.com'': {''host'': ''proxysql'',
-      ''port'': 6033, ''database'': ''db_site6'', ''username'': ''user6'', ''password'':
-      ''pass6''}, ''site7.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
-      ''db_site7'', ''username'': ''user7'', ''password'': ''pass7''}, ''site8.com'':
-      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site8'', ''username'':
-      ''user8'', ''password'': ''pass8''}, ''site9.com'': {''host'': ''proxysql'',
-      ''port'': 6033, ''database'': ''db_site9'', ''username'': ''user9'', ''password'':
-      ''pass9''}, ''site10.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
-      ''db_site10'', ''username'': ''user10'', ''password'': ''pass10''}, ''site11.com'':
-      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site11'', ''username'':
-      ''user11'', ''password'': ''pass11''}, ''site12.com'': {''host'': ''proxysql'',
-      ''port'': 6033, ''database'': ''db_site12'', ''username'': ''user12'', ''password'':
-      ''pass12''}, ''site13.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
-      ''db_site13'', ''username'': ''user13'', ''password'': ''pass13''}, ''site14.com'':
-      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site14'', ''username'':
-      ''user14'', ''password'': ''pass14''}, ''site15.com'': {''host'': ''proxysql'',
-      ''port'': 6033, ''database'': ''db_site15'', ''username'': ''user15'', ''password'':
-      ''pass15''}, ''site16.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
-      ''db_site16'', ''username'': ''user16'', ''password'': ''pass16''}, ''site17.com'':
-      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site17'', ''username'':
-      ''user17'', ''password'': ''pass17''}, ''site18.com'': {''host'': ''proxysql'',
-      ''port'': 6033, ''database'': ''db_site18'', ''username'': ''user18'', ''password'':
-      ''pass18''}, ''site19.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
-      ''db_site19'', ''username'': ''user19'', ''password'': ''pass19''}, ''site20.com'':
-      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site20'', ''username'':
-      ''user20'', ''password'': ''pass20''}}'
+    - 'DB_MAPPING={''147.93.104.239'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
+      ''db_site1'', ''username'': ''user1'', ''password'': ''pass1''}, ''testing.lookhype.com'':
+      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site1'', ''username'':
+      ''user2'', ''password'': ''pass1''}, ''site1.com'': {''host'': ''proxysql'',
+      ''port'': 6033, ''database'': ''db_site1'', ''username'': ''user3'', ''password'':
+      ''pass1''}, ''site2.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
+      ''db_site2'', ''username'': ''user4'', ''password'': ''pass2''}, ''site3.com'':
+      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site3'', ''username'':
+      ''user5'', ''password'': ''pass3''}, ''site4.com'': {''host'': ''proxysql'',
+      ''port'': 6033, ''database'': ''db_site4'', ''username'': ''user6'', ''password'':
+      ''pass4''}, ''site5.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
+      ''db_site5'', ''username'': ''user7'', ''password'': ''pass5''}, ''site6.com'':
+      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site6'', ''username'':
+      ''user8'', ''password'': ''pass6''}, ''site7.com'': {''host'': ''proxysql'',
+      ''port'': 6033, ''database'': ''db_site7'', ''username'': ''user9'', ''password'':
+      ''pass7''}, ''site8.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
+      ''db_site8'', ''username'': ''user10'', ''password'': ''pass8''}, ''site9.com'':
+      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site9'', ''username'':
+      ''user11'', ''password'': ''pass9''}, ''site10.com'': {''host'': ''proxysql'',
+      ''port'': 6033, ''database'': ''db_site10'', ''username'': ''user12'', ''password'':
+      ''pass10''}, ''site11.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
+      ''db_site11'', ''username'': ''user13'', ''password'': ''pass11''}, ''site12.com'':
+      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site12'', ''username'':
+      ''user14'', ''password'': ''pass12''}, ''site13.com'': {''host'': ''proxysql'',
+      ''port'': 6033, ''database'': ''db_site13'', ''username'': ''user15'', ''password'':
+      ''pass13''}, ''site14.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
+      ''db_site14'', ''username'': ''user16'', ''password'': ''pass14''}, ''site15.com'':
+      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site15'', ''username'':
+      ''user17'', ''password'': ''pass15''}, ''site16.com'': {''host'': ''proxysql'',
+      ''port'': 6033, ''database'': ''db_site16'', ''username'': ''user18'', ''password'':
+      ''pass16''}, ''site17.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
+      ''db_site17'', ''username'': ''user19'', ''password'': ''pass17''}, ''site18.com'':
+      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site18'', ''username'':
+      ''user20'', ''password'': ''pass18''}}'
     - APP_ENV=production
     image: masteransh/laravel-ecommerce-prateek:latest
     networks:
@@ -75,7 +75,7 @@ services:
     deploy:
       placement:
         constraints:
-        - node.labels.db == server2
+        - node.labels.db == server3
     environment:
       MYSQL_DATABASE: db_site10
       MYSQL_PASSWORD: pass10
@@ -135,7 +135,7 @@ services:
     deploy:
       placement:
         constraints:
-        - node.labels.db == server3
+        - node.labels.db == server4
     environment:
       MYSQL_DATABASE: db_site14
       MYSQL_PASSWORD: pass14
@@ -150,7 +150,7 @@ services:
     deploy:
       placement:
         constraints:
-        - node.labels.db == server3
+        - node.labels.db == server4
     environment:
       MYSQL_DATABASE: db_site15
       MYSQL_PASSWORD: pass15
@@ -206,21 +206,6 @@ services:
     - internal_net
     volumes:
     - mysql18_data:/var/lib/mysql
-  mysql19:
-    deploy:
-      placement:
-        constraints:
-        - node.labels.db == server4
-    environment:
-      MYSQL_DATABASE: db_site19
-      MYSQL_PASSWORD: pass19
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_USER: user
-    image: mysql:8.0
-    networks:
-    - internal_net
-    volumes:
-    - mysql19_data:/var/lib/mysql
   mysql2:
     deploy:
       placement:
@@ -236,21 +221,6 @@ services:
     - internal_net
     volumes:
     - mysql2_data:/var/lib/mysql
-  mysql20:
-    deploy:
-      placement:
-        constraints:
-        - node.labels.db == server4
-    environment:
-      MYSQL_DATABASE: db_site20
-      MYSQL_PASSWORD: pass20
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_USER: user
-    image: mysql:8.0
-    networks:
-    - internal_net
-    volumes:
-    - mysql20_data:/var/lib/mysql
   mysql3:
     deploy:
       placement:
@@ -270,7 +240,7 @@ services:
     deploy:
       placement:
         constraints:
-        - node.labels.db == server1
+        - node.labels.db == server2
     environment:
       MYSQL_DATABASE: db_site4
       MYSQL_PASSWORD: pass4
@@ -285,7 +255,7 @@ services:
     deploy:
       placement:
         constraints:
-        - node.labels.db == server1
+        - node.labels.db == server2
     environment:
       MYSQL_DATABASE: db_site5
       MYSQL_PASSWORD: pass5
@@ -345,7 +315,7 @@ services:
     deploy:
       placement:
         constraints:
-        - node.labels.db == server2
+        - node.labels.db == server3
     environment:
       MYSQL_DATABASE: db_site9
       MYSQL_PASSWORD: pass9
@@ -389,9 +359,7 @@ volumes:
   mysql16_data: null
   mysql17_data: null
   mysql18_data: null
-  mysql19_data: null
   mysql1_data: null
-  mysql20_data: null
   mysql2_data: null
   mysql3_data: null
   mysql4_data: null
