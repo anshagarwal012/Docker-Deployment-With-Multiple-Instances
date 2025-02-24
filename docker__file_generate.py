@@ -111,7 +111,7 @@ stack['services']['proxysql'] = {
     'image': 'proxysql/proxysql:latest',
     'ports': [
         "6032:6032",  # Admin interface
-        "6033:6033"   # MySQL client interface
+        "6034:6033"   # MySQL client interface
     ],
     'networks': ['internal_net'],
     'volumes': ['./proxysql.cnf:/etc/proxysql.cnf:ro'],
