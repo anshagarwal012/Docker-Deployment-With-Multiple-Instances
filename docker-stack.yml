@@ -327,6 +327,9 @@ services:
     volumes:
     - mysql9_data:/var/lib/mysql
   nginx:
+    configs:
+    - source: nginx_conf
+      target: /etc/nginx/nginx.conf
     deploy:
       placement:
         constraints:

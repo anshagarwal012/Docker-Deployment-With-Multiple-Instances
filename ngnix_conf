@@ -2,14 +2,22 @@ worker_processes auto;
 events {
     worker_connections 1024;
 }
+
 http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+    keepalive_timeout  65;
+
+    # Define the upstream for your Laravel application
     upstream app_servers {
         server app:9000;
     }
 
     server {
-        listen 80;
-        server_name _;
+        listen 80 default_server;
+        server_name _;  # Catch-all for any hostname
 
         location / {
             proxy_pass http://app_servers;

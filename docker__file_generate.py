@@ -46,6 +46,12 @@ stack = {
 stack['services']['nginx'] = {
     'image': 'nginx:latest',
     'ports': ['80:80'],
+    'configs': [
+        {
+            "source": "nginx_conf",
+            "target": "/etc/nginx/nginx.conf"
+        }
+    ],
     # Using Docker configs is recommended for swarm deployments instead of bind mounts
     # 'volumes': ['./nginx.conf:/etc/nginx/nginx.conf:ro'],
     'networks': ['internal_net'],
