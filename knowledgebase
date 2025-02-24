@@ -20,3 +20,7 @@ docker volume rm mystack_backup_data mystack_mysql1_data mystack_mysql2_data mys
 
 #clear cahce and reset all
 docker system prune
+
+#check docker stack working or not
+docker stack ps mystack
+docker service ls
