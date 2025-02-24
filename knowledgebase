@@ -6,3 +6,17 @@ docker push masteransh/backup:latest
 
 docker service update --image masteransh/laravel-ecommerce-prateek:latest mystack_app
 docker stack rm mystack
+
+
+docker node ls
+docker node inspect ntyh5o096ucif67xmv5lq5ysu
+docker node update --label-add db=server1 lslhvkxj8nmbpublll8wuuysu
+docker node update --label-add db=server2 ntyh5o096ucif67xmv5lq5ysu
+docker node update --label-add db=server3 jbxqi3i8eu7qnhlvngj1gq9ns
+docker node update --label-add db=server4 y4pjxxd97imut9uhiw5bd83pu
+
+# for deletions all volumes
+docker volume rm mystack_backup_data mystack_mysql1_data mystack_mysql2_data mystack_mysql3_data mystack_mysql4_data mystack_mysql5_data
+
+#clear cahce and reset all
+docker system prune
