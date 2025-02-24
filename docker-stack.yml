@@ -1,0 +1,404 @@
+networks:
+  internal_net:
+    driver: overlay
+    internal: true
+services:
+  app:
+    deploy:
+      replicas: 4
+      update_config:
+        delay: 10s
+        parallelism: 2
+    environment:
+    - 'DB_MAPPING={''site1.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
+      ''db_site1'', ''username'': ''user1'', ''password'': ''pass1''}, ''site2.com'':
+      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site2'', ''username'':
+      ''user2'', ''password'': ''pass2''}, ''site3.com'': {''host'': ''proxysql'',
+      ''port'': 6033, ''database'': ''db_site3'', ''username'': ''user3'', ''password'':
+      ''pass3''}, ''site4.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
+      ''db_site4'', ''username'': ''user4'', ''password'': ''pass4''}, ''site5.com'':
+      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site5'', ''username'':
+      ''user5'', ''password'': ''pass5''}, ''site6.com'': {''host'': ''proxysql'',
+      ''port'': 6033, ''database'': ''db_site6'', ''username'': ''user6'', ''password'':
+      ''pass6''}, ''site7.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
+      ''db_site7'', ''username'': ''user7'', ''password'': ''pass7''}, ''site8.com'':
+      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site8'', ''username'':
+      ''user8'', ''password'': ''pass8''}, ''site9.com'': {''host'': ''proxysql'',
+      ''port'': 6033, ''database'': ''db_site9'', ''username'': ''user9'', ''password'':
+      ''pass9''}, ''site10.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
+      ''db_site10'', ''username'': ''user10'', ''password'': ''pass10''}, ''site11.com'':
+      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site11'', ''username'':
+      ''user11'', ''password'': ''pass11''}, ''site12.com'': {''host'': ''proxysql'',
+      ''port'': 6033, ''database'': ''db_site12'', ''username'': ''user12'', ''password'':
+      ''pass12''}, ''site13.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
+      ''db_site13'', ''username'': ''user13'', ''password'': ''pass13''}, ''site14.com'':
+      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site14'', ''username'':
+      ''user14'', ''password'': ''pass14''}, ''site15.com'': {''host'': ''proxysql'',
+      ''port'': 6033, ''database'': ''db_site15'', ''username'': ''user15'', ''password'':
+      ''pass15''}, ''site16.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
+      ''db_site16'', ''username'': ''user16'', ''password'': ''pass16''}, ''site17.com'':
+      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site17'', ''username'':
+      ''user17'', ''password'': ''pass17''}, ''site18.com'': {''host'': ''proxysql'',
+      ''port'': 6033, ''database'': ''db_site18'', ''username'': ''user18'', ''password'':
+      ''pass18''}, ''site19.com'': {''host'': ''proxysql'', ''port'': 6033, ''database'':
+      ''db_site19'', ''username'': ''user19'', ''password'': ''pass19''}, ''site20.com'':
+      {''host'': ''proxysql'', ''port'': 6033, ''database'': ''db_site20'', ''username'':
+      ''user20'', ''password'': ''pass20''}}'
+    - APP_ENV=production
+    image: masteransh/laravel-ecommerce-prateek:latest
+    networks:
+    - internal_net
+  backup:
+    deploy:
+      replicas: 1
+    image: masteransh/backup:latest
+    networks:
+    - internal_net
+    volumes:
+    - backup_data:/backups
+  mysql1:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server1
+    environment:
+      MYSQL_DATABASE: db_site1
+      MYSQL_PASSWORD: pass1
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql1_data:/var/lib/mysql
+  mysql10:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server2
+    environment:
+      MYSQL_DATABASE: db_site10
+      MYSQL_PASSWORD: pass10
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql10_data:/var/lib/mysql
+  mysql11:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server3
+    environment:
+      MYSQL_DATABASE: db_site11
+      MYSQL_PASSWORD: pass11
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql11_data:/var/lib/mysql
+  mysql12:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server3
+    environment:
+      MYSQL_DATABASE: db_site12
+      MYSQL_PASSWORD: pass12
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql12_data:/var/lib/mysql
+  mysql13:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server3
+    environment:
+      MYSQL_DATABASE: db_site13
+      MYSQL_PASSWORD: pass13
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql13_data:/var/lib/mysql
+  mysql14:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server3
+    environment:
+      MYSQL_DATABASE: db_site14
+      MYSQL_PASSWORD: pass14
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql14_data:/var/lib/mysql
+  mysql15:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server3
+    environment:
+      MYSQL_DATABASE: db_site15
+      MYSQL_PASSWORD: pass15
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql15_data:/var/lib/mysql
+  mysql16:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server4
+    environment:
+      MYSQL_DATABASE: db_site16
+      MYSQL_PASSWORD: pass16
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql16_data:/var/lib/mysql
+  mysql17:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server4
+    environment:
+      MYSQL_DATABASE: db_site17
+      MYSQL_PASSWORD: pass17
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql17_data:/var/lib/mysql
+  mysql18:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server4
+    environment:
+      MYSQL_DATABASE: db_site18
+      MYSQL_PASSWORD: pass18
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql18_data:/var/lib/mysql
+  mysql19:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server4
+    environment:
+      MYSQL_DATABASE: db_site19
+      MYSQL_PASSWORD: pass19
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql19_data:/var/lib/mysql
+  mysql2:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server1
+    environment:
+      MYSQL_DATABASE: db_site2
+      MYSQL_PASSWORD: pass2
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql2_data:/var/lib/mysql
+  mysql20:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server4
+    environment:
+      MYSQL_DATABASE: db_site20
+      MYSQL_PASSWORD: pass20
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql20_data:/var/lib/mysql
+  mysql3:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server1
+    environment:
+      MYSQL_DATABASE: db_site3
+      MYSQL_PASSWORD: pass3
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql3_data:/var/lib/mysql
+  mysql4:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server1
+    environment:
+      MYSQL_DATABASE: db_site4
+      MYSQL_PASSWORD: pass4
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql4_data:/var/lib/mysql
+  mysql5:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server1
+    environment:
+      MYSQL_DATABASE: db_site5
+      MYSQL_PASSWORD: pass5
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql5_data:/var/lib/mysql
+  mysql6:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server2
+    environment:
+      MYSQL_DATABASE: db_site6
+      MYSQL_PASSWORD: pass6
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql6_data:/var/lib/mysql
+  mysql7:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server2
+    environment:
+      MYSQL_DATABASE: db_site7
+      MYSQL_PASSWORD: pass7
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql7_data:/var/lib/mysql
+  mysql8:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server2
+    environment:
+      MYSQL_DATABASE: db_site8
+      MYSQL_PASSWORD: pass8
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql8_data:/var/lib/mysql
+  mysql9:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server2
+    environment:
+      MYSQL_DATABASE: db_site9
+      MYSQL_PASSWORD: pass9
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: user
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql9_data:/var/lib/mysql
+  nginx:
+    deploy:
+      placement:
+        constraints:
+        - node.role == manager
+    image: nginx:latest
+    networks:
+    - internal_net
+    ports:
+    - 80:80
+    volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf:ro
+  proxysql:
+    deploy:
+      replicas: 1
+    image: proxysql/proxysql:latest
+    networks:
+    - internal_net
+    ports:
+    - 6032:6032
+    - 6033:6033
+    volumes:
+    - ./proxysql.cnf:/etc/proxysql.cnf:ro
+version: '3.8'
+volumes:
+  backup_data: null
+  mysql10_data: null
+  mysql11_data: null
+  mysql12_data: null
+  mysql13_data: null
+  mysql14_data: null
+  mysql15_data: null
+  mysql16_data: null
+  mysql17_data: null
+  mysql18_data: null
+  mysql19_data: null
+  mysql1_data: null
+  mysql20_data: null
+  mysql2_data: null
+  mysql3_data: null
+  mysql4_data: null
+  mysql5_data: null
+  mysql6_data: null
+  mysql7_data: null
+  mysql8_data: null
+  mysql9_data: null
