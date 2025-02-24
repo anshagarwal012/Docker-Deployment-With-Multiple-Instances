@@ -2,6 +2,8 @@ import yaml
 
 # List of domains with associated DB service name, DB name and DB password
 domains = [
+    {"domain": "147.93.104.239",  "db_service": "mysql1",  "db_name": "db_site1",  "db_password": "pass1"},
+    {"domain": "testing.lookhype.com",  "db_service": "mysql1",  "db_name": "db_site1",  "db_password": "pass1"},
     {"domain": "site1.com",  "db_service": "mysql1",  "db_name": "db_site1",  "db_password": "pass1"},
     {"domain": "site2.com",  "db_service": "mysql2",  "db_name": "db_site2",  "db_password": "pass2"},
     {"domain": "site3.com",  "db_service": "mysql3",  "db_name": "db_site3",  "db_password": "pass3"},
