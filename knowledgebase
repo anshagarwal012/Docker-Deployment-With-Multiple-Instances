@@ -5,3 +5,4 @@ docker push masteransh/backup:latest
 
 
 docker service update --image masteransh/laravel-ecommerce-prateek:latest mystack_app
+docker stack rm mystack
