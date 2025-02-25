@@ -1,4 +1,5 @@
 worker_processes auto;
+
 events {
     worker_connections 1024;
 }
@@ -9,22 +10,37 @@ http {
 
     sendfile        on;
     keepalive_timeout  65;
+    server_tokens off;
 
-    # Define the upstream for your Laravel application
     upstream app_servers {
         server app:9000;
     }
 
     server {
-        listen 80 default_server;
-        server_name _;  # Catch-all for any hostname
+        listen 80;
+        server_name _;  # Catch-all for all domains
+
+        root /var/www/html/public;  # Single html installation
+        index index.php index.html;
+        client_max_body_size 100M;
 
         location / {
-            proxy_pass http://app_servers;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
+            try_files $uri $uri/ /index.php?$query_string;
         }
+
+        location ~ \.php$ {
+            include fastcgi_params;
+            fastcgi_pass app_servers;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME /var/www/html/public$fastcgi_script_name;
+        }
+
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|otf|mp4|webm|ogg|mp3|wav|json|txt)$ {
+            expires max;
+            log_not_found off;
+            access_log off;
+        }
+
+        error_page 404 /index.php;
     }
 }

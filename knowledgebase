@@ -24,3 +24,7 @@ docker system prune
 #check docker stack working or not
 docker stack ps mystack
 docker service ls
+
+# For Monitoring
+docker stats (live)
+docker container stats --no-stream

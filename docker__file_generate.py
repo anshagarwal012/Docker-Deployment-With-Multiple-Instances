@@ -1,9 +1,9 @@
-import yaml
+import yaml, json
 
 # List of domains with associated DB service name, DB name and DB password
 domains = [
-    {"domain": "147.93.104.239",  "db_service": "mysql1",  "db_name": "db_site1",  "db_password": "pass1"},
-    {"domain": "testing.lookhype.com",  "db_service": "mysql1",  "db_name": "db_site1",  "db_password": "pass1"},
+    {"domain": "147.93.104.239",  "db_service": "mysql19",  "db_name": "allairx",  "db_password": "WireTrip0908@allairx"},
+    {"domain": "testing.lookhype.com",  "db_service": "mysql20",  "db_name": "allairx",  "db_password": "WireTrip0908@allairx"},
     {"domain": "site1.com",  "db_service": "mysql1",  "db_name": "db_site1",  "db_password": "pass1"},
     {"domain": "site2.com",  "db_service": "mysql2",  "db_name": "db_site2",  "db_password": "pass2"},
     {"domain": "site3.com",  "db_service": "mysql3",  "db_name": "db_site3",  "db_password": "pass3"},
@@ -74,7 +74,7 @@ db_mapping = {
     }
     for index, item in enumerate(domains, start=1)
 }
-
+db_mapping_str = json.dumps(db_mapping, separators=(',', ':'))
 stack['services']['app'] = {
     'image': 'masteransh/laravel-ecommerce-prateek:latest',
     'networks': ['internal_net'],
@@ -86,7 +86,7 @@ stack['services']['app'] = {
         }
     },
     'environment': [
-        f'DB_MAPPING={db_mapping}',
+        f'DB_MAPPING={db_mapping_str}',
         'APP_ENV=production'
     ]
 }
@@ -132,15 +132,15 @@ stack['services']['proxysql'] = {
 }
 
 # 5. Backup Service (runs a daily backup using a custom backup image)
-stack['services']['backup'] = {
-    'image': 'masteransh/backup:latest',
-    'networks': ['internal_net'],
-    'volumes': ['backup_data:/backups'],
-    'deploy': {
-        'replicas': 1
-    }
-}
-stack['volumes']['backup_data'] = None
+# stack['services']['backup'] = {
+#     'image': 'masteransh/backup:latest',
+#     'networks': ['internal_net'],
+#     'volumes': ['backup_data:/backups'],
+#     'deploy': {
+#         'replicas': 1
+#     }
+# }
+# stack['volumes']['backup_data'] = None
 
 # Write the generated Docker stack YAML file
 with open('docker-stack.yml', 'w') as f:
