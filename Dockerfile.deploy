@@ -3,4 +3,4 @@ RUN apk add --no-cache python3 py3-pip
 RUN pip3 install pyyaml
 COPY generate_stack.py /usr/local/bin/generate_stack.py
 WORKDIR /workspace
-CMD ["sh", "-c", "python3 /usr/local/bin/generate_stack.py && docker stack deploy -c docker-stack.yml mystack"]
+CMD ["sh", "-c", "python3 docker__file_generate.py && docker stack deploy -c docker-stack.yml mystack"]
