@@ -42,23 +42,21 @@ stack = {
     'volumes': {}
 }
 
-# 1. Nginx Load Balancer Service
 stack['services']['nginx'] = {
     'image': 'nginx:latest',
     'ports': ['80:80'],
-    'configs': [
-        {
-            "source": "nginx_conf",
-            "target": "/etc/nginx/nginx.conf"
-        }
-    ],
-    # Using Docker configs is recommended for swarm deployments instead of bind mounts
-    # 'volumes': ['./nginx.conf:/etc/nginx/nginx.conf:ro'],
+    'configs': ['nginx_conf'],  # Fix: Correct way to reference config
     'networks': ['internal_net'],
     'deploy': {
         'placement': {
             'constraints': ['node.role == manager']
         }
+    }
+}
+
+stack['configs'] = {
+    'nginx_conf': {
+        'file': './nginx.conf'  # Fix: Define the config properly
     }
 }
 

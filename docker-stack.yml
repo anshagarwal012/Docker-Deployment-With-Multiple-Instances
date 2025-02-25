@@ -1,3 +1,6 @@
+configs:
+  nginx_conf:
+    file: ./nginx.conf
 networks:
   internal_net:
     driver: overlay
@@ -317,8 +320,7 @@ services:
     - mysql9_data:/var/lib/mysql
   nginx:
     configs:
-    - source: nginx_conf
-      target: /etc/nginx/nginx.conf
+    - nginx_conf
     deploy:
       placement:
         constraints:
