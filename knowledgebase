@@ -28,3 +28,5 @@ docker service ls
 # For Monitoring
 docker stats (live)
 docker container stats --no-stream
+
+docker-compose down && docker-compose up -d --build
