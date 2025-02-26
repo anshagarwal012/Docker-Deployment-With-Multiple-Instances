@@ -1,0 +1,29 @@
+docker exec -it mysql_master mysql -uroot -prootpassword -e "SHOW MASTER STATUS\G"
+#Note the values for File and Position.
+
+docker exec -it mysql_replica mysql -uroot -prootpassword
+#Then run (replace mysql-bin.000001 and 154 with your master’s actual File and Position):
+
+CHANGE MASTER TO 
+  MASTER_HOST='mysql_master',
+  MASTER_USER='allairx',
+  MASTER_PASSWORD='WireTrip0908@allairx',
+  MASTER_LOG_FILE='mysql-bin.000004',
+  MASTER_LOG_POS=157;
+START SLAVE;
+SHOW SLAVE STATUS\G;
+#Verify that Slave_IO_Running and Slave_SQL_Running are both Yes.
+
+docker exec -it proxysql mysql -u admin -padmin -h 127.0.0.1 -P6032
+LOAD MYSQL SERVERS TO RUNTIME;
+SAVE MYSQL SERVERS TO DISK;
+LOAD MYSQL USERS TO RUNTIME;
+SAVE MYSQL USERS TO DISK;
+LOAD MYSQL QUERY RULES TO RUNTIME;
+SAVE MYSQL QUERY RULES TO DISK;
+
+
+docker exec -it ecommerce_app sh -c "mysql -h proxysql -P6033 -u allairx -pWireTrip0908@allairx -e 'SHOW DATABASES;'"
+
+#for testing
+docker exec -it mysql_master mysql -uroot -prootpassword -e "USE allairx; CREATE TABLE IF NOT EXISTS test_replication (id INT AUTO_INCREMENT PRIMARY KEY, message VARCHAR(255)); INSERT INTO test_replication (message) VALUES ('Replication Test');"

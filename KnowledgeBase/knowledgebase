@@ -1,8 +1,5 @@
 docker build -t masteransh/laravel-ecommerce-prateek:latest .
 docker push masteransh/laravel-ecommerce-prateek:latest
-docker build -t masteransh/backup:latest .
-docker push masteransh/backup:latest
-
 
 docker service update --image masteransh/laravel-ecommerce-prateek:latest mystack_app
 docker stack rm mystack
@@ -29,4 +26,5 @@ docker service ls
 docker stats (live)
 docker container stats --no-stream
 
-docker-compose down && docker-compose up -d --build
+# For Remove with Volumn remove -v if you keep safe volumes
+docker-compose down -v && docker-compose up -d --build

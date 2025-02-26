@@ -1,0 +1,14 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # If your services expose metrics endpoints (e.g., via cAdvisor or Node Exporter),
+  # you can add additional jobs. For example:
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['ecommerce_app:9000']  # Adjust to the service endpoint that exposes metrics

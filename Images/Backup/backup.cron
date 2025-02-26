@@ -1,0 +1,1 @@
+0 2 * * * /home/Deployment/Images/Backup/backup_all_mysql.sh >> /var/log/mysql_backup.log 2>&1

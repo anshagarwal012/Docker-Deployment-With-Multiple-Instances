@@ -1,0 +1,8 @@
+docker stack deploy -c docker-stack-monitoring.yml my_monitoring
+
+Access Prometheus and Grafana:
+Prometheus:
+Open your browser and navigate to http://<your-server-ip>:9090 to see Prometheus’s UI and verify it is scraping metrics.
+Grafana:
+Open your browser and navigate to http://<your-server-ip>:3000. The default login is usually admin/admin (you will be prompted to change it on first login).
+Then add Prometheus as a data source (URL: http://prometheus:9090 if using the same internal network) and import dashboards for container metrics.

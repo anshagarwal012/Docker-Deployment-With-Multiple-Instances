@@ -10,7 +10,7 @@ services:
       - redis
     environment:
       APP_ENV: production
-      APP_DEBUG: 'false'
+      APP_DEBUG: 'true'
       DB_CONNECTION: mysql
       DB_HOST: proxysql
       DB_PORT: 6033
@@ -28,7 +28,7 @@ services:
 
   mysql:
     image: mysql:8.0
-    container_name: mysql
+    container_name: mysql_master
     restart: always
     networks:
       - internal_net
@@ -37,11 +37,28 @@ services:
       MYSQL_DATABASE: allairx
       MYSQL_USER: allairx
       MYSQL_PASSWORD: WireTrip0908@allairx
-    command: --default-authentication-plugin=mysql_native_password
+    command: --default-authentication-plugin=mysql_native_password --server-id=1 --log-bin=mysql-bin
     volumes:
-      - /home/databases/mysql:/var/lib/mysql
+      - /home/databases/mysql_master:/var/lib/mysql
     ports:
       - "3306:3306"
+
+  mysql_replica:
+    image: mysql:8.0
+    container_name: mysql_replica
+    restart: always
+    networks:
+      - internal_net
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: allairx
+      MYSQL_USER: allairx
+      MYSQL_PASSWORD: WireTrip0908@allairx
+    command: --default-authentication-plugin=mysql_native_password --server-id=2 --relay-log=relay-bin
+    volumes:
+      - /home/databases/mysql_replica:/var/lib/mysql
+    ports:
+      - "3307:3306"
 
   proxysql:
     image: proxysql/proxysql:latest
@@ -49,6 +66,7 @@ services:
     restart: always
     depends_on:
       - mysql
+      - mysql_replica
     networks:
       - internal_net
     volumes:
@@ -76,7 +94,7 @@ services:
     networks:
       - internal_net
     environment:
-      PMA_HOST: mysql
+      PMA_HOST: mysql_master
       PMA_PORT: 3306
       MYSQL_ROOT_PASSWORD: rootpassword
     ports:
@@ -100,6 +118,6 @@ services:
 networks:
   internal_net:
     driver: bridge
-    
+
 volumes:
   laravel_code:

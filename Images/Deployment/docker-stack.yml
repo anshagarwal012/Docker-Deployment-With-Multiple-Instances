@@ -9,20 +9,28 @@ services:
   app:
     deploy:
       replicas: 4
+      restart_policy:
+        condition: any
       update_config:
         delay: 10s
         parallelism: 2
     environment:
-    - DB_MAPPING={"147.93.104.239":{"host":"proxysql","port":6033,"database":"allairx","username":"user1","password":"WireTrip0908@allairx"},"testing.lookhype.com":{"host":"proxysql","port":6033,"database":"allairx","username":"user2","password":"WireTrip0908@allairx"},"site1.com":{"host":"proxysql","port":6033,"database":"db_site1","username":"user3","password":"pass1"},"site2.com":{"host":"proxysql","port":6033,"database":"db_site2","username":"user4","password":"pass2"},"site3.com":{"host":"proxysql","port":6033,"database":"db_site3","username":"user5","password":"pass3"},"site4.com":{"host":"proxysql","port":6033,"database":"db_site4","username":"user6","password":"pass4"},"site5.com":{"host":"proxysql","port":6033,"database":"db_site5","username":"user7","password":"pass5"},"site6.com":{"host":"proxysql","port":6033,"database":"db_site6","username":"user8","password":"pass6"},"site7.com":{"host":"proxysql","port":6033,"database":"db_site7","username":"user9","password":"pass7"},"site8.com":{"host":"proxysql","port":6033,"database":"db_site8","username":"user10","password":"pass8"},"site9.com":{"host":"proxysql","port":6033,"database":"db_site9","username":"user11","password":"pass9"},"site10.com":{"host":"proxysql","port":6033,"database":"db_site10","username":"user12","password":"pass10"},"site11.com":{"host":"proxysql","port":6033,"database":"db_site11","username":"user13","password":"pass11"},"site12.com":{"host":"proxysql","port":6033,"database":"db_site12","username":"user14","password":"pass12"},"site13.com":{"host":"proxysql","port":6033,"database":"db_site13","username":"user15","password":"pass13"},"site14.com":{"host":"proxysql","port":6033,"database":"db_site14","username":"user16","password":"pass14"},"site15.com":{"host":"proxysql","port":6033,"database":"db_site15","username":"user17","password":"pass15"},"site16.com":{"host":"proxysql","port":6033,"database":"db_site16","username":"user18","password":"pass16"},"site17.com":{"host":"proxysql","port":6033,"database":"db_site17","username":"user19","password":"pass17"},"site18.com":{"host":"proxysql","port":6033,"database":"db_site18","username":"user20","password":"pass18"}}
     - APP_ENV=production
+    - APP_DEBUG=false
+    - REDIS_HOST=redis
+    - REDIS_PORT=6379
+    expose:
+    - '9000'
     image: masteransh/laravel-ecommerce-prateek:latest
     networks:
     - internal_net
+    volumes:
+    - laravel_code:/var/www/html
   mysql1:
     deploy:
       placement:
         constraints:
-        - node.labels.db == server1
+        - node.labels.db == server3
     environment:
       MYSQL_DATABASE: db_site1
       MYSQL_PASSWORD: pass1
@@ -37,7 +45,7 @@ services:
     deploy:
       placement:
         constraints:
-        - node.labels.db == server3
+        - node.labels.db == server4
     environment:
       MYSQL_DATABASE: db_site10
       MYSQL_PASSWORD: pass10
@@ -52,7 +60,7 @@ services:
     deploy:
       placement:
         constraints:
-        - node.labels.db == server3
+        - node.labels.db == server1
     environment:
       MYSQL_DATABASE: db_site11
       MYSQL_PASSWORD: pass11
@@ -67,7 +75,7 @@ services:
     deploy:
       placement:
         constraints:
-        - node.labels.db == server3
+        - node.labels.db == server2
     environment:
       MYSQL_DATABASE: db_site12
       MYSQL_PASSWORD: pass12
@@ -112,7 +120,7 @@ services:
     deploy:
       placement:
         constraints:
-        - node.labels.db == server4
+        - node.labels.db == server1
     environment:
       MYSQL_DATABASE: db_site15
       MYSQL_PASSWORD: pass15
@@ -127,7 +135,7 @@ services:
     deploy:
       placement:
         constraints:
-        - node.labels.db == server4
+        - node.labels.db == server2
     environment:
       MYSQL_DATABASE: db_site16
       MYSQL_PASSWORD: pass16
@@ -142,7 +150,7 @@ services:
     deploy:
       placement:
         constraints:
-        - node.labels.db == server4
+        - node.labels.db == server3
     environment:
       MYSQL_DATABASE: db_site17
       MYSQL_PASSWORD: pass17
@@ -187,7 +195,7 @@ services:
     deploy:
       placement:
         constraints:
-        - node.labels.db == server1
+        - node.labels.db == server4
     environment:
       MYSQL_DATABASE: db_site2
       MYSQL_PASSWORD: pass2
@@ -202,7 +210,7 @@ services:
     deploy:
       placement:
         constraints:
-        - node.labels.db == server1
+        - node.labels.db == server2
     environment:
       MYSQL_DATABASE: allairx
       MYSQL_PASSWORD: WireTrip0908@allairx
@@ -247,7 +255,7 @@ services:
     deploy:
       placement:
         constraints:
-        - node.labels.db == server2
+        - node.labels.db == server3
     environment:
       MYSQL_DATABASE: db_site5
       MYSQL_PASSWORD: pass5
@@ -262,7 +270,7 @@ services:
     deploy:
       placement:
         constraints:
-        - node.labels.db == server2
+        - node.labels.db == server4
     environment:
       MYSQL_DATABASE: db_site6
       MYSQL_PASSWORD: pass6
@@ -277,7 +285,7 @@ services:
     deploy:
       placement:
         constraints:
-        - node.labels.db == server2
+        - node.labels.db == server1
     environment:
       MYSQL_DATABASE: db_site7
       MYSQL_PASSWORD: pass7
@@ -330,7 +338,27 @@ services:
     - internal_net
     ports:
     - 80:80
+    - 443:443
+    volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    - ./ssl:/etc/nginx/ssl:ro
+    - /home/logs/nginx:/var/log/nginx
+  phpmyadmin:
+    container_name: phpmyadmin
+    depends_on:
+    - mysql19
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      PMA_HOST: mysql19
+      PMA_PORT: '3306'
+    image: phpmyadmin/phpmyadmin:latest
+    networks:
+    - internal_net
+    ports:
+    - 8080:80
+    restart: always
   proxysql:
+    depends_on: []
     deploy:
       replicas: 1
     image: proxysql/proxysql:latest
@@ -341,8 +369,17 @@ services:
     - 6034:6033
     volumes:
     - ./proxysql.cnf:/etc/proxysql.cnf:ro
+  redis:
+    container_name: redis
+    image: redis:alpine
+    networks:
+    - internal_net
+    ports:
+    - 6379:6379
+    restart: always
 version: '3.8'
 volumes:
+  laravel_code: null
   mysql10_data: null
   mysql11_data: null
   mysql12_data: null
