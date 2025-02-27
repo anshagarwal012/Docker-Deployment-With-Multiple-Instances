@@ -6,24 +6,24 @@ import os, subprocess, yaml, json
 domains = [
     {"domain": "147.93.104.239", "db_service": "mysql19", "db_name": "allairx", "db_password": "WireTrip0908@allairx"},
     {"domain": "allairx.com", "db_service": "mysql20", "db_name": "allairx", "db_password": "WireTrip0908@allairx"},
-    {"domain": "site1.com", "db_service": "mysql1", "db_name": "db_site1", "db_password": "pass1"},
-    {"domain": "site2.com", "db_service": "mysql2", "db_name": "db_site2", "db_password": "pass2"},
-    {"domain": "site3.com", "db_service": "mysql3", "db_name": "db_site3", "db_password": "pass3"},
-    {"domain": "site4.com", "db_service": "mysql4", "db_name": "db_site4", "db_password": "pass4"},
-    {"domain": "site5.com", "db_service": "mysql5", "db_name": "db_site5", "db_password": "pass5"},
-    {"domain": "site6.com", "db_service": "mysql6", "db_name": "db_site6", "db_password": "pass6"},
-    {"domain": "site7.com", "db_service": "mysql7", "db_name": "db_site7", "db_password": "pass7"},
-    {"domain": "site8.com", "db_service": "mysql8", "db_name": "db_site8", "db_password": "pass8"},
-    {"domain": "site9.com", "db_service": "mysql9", "db_name": "db_site9", "db_password": "pass9"},
-    {"domain": "site10.com", "db_service": "mysql10", "db_name": "db_site10", "db_password": "pass10"},
-    {"domain": "site11.com", "db_service": "mysql11", "db_name": "db_site11", "db_password": "pass11"},
-    {"domain": "site12.com", "db_service": "mysql12", "db_name": "db_site12", "db_password": "pass12"},
-    {"domain": "site13.com", "db_service": "mysql13", "db_name": "db_site13", "db_password": "pass13"},
-    {"domain": "site14.com", "db_service": "mysql14", "db_name": "db_site14", "db_password": "pass14"},
-    {"domain": "site15.com", "db_service": "mysql15", "db_name": "db_site15", "db_password": "pass15"},
-    {"domain": "site16.com", "db_service": "mysql16", "db_name": "db_site16", "db_password": "pass16"},
-    {"domain": "site17.com", "db_service": "mysql17", "db_name": "db_site17", "db_password": "pass17"},
-    {"domain": "site18.com", "db_service": "mysql18", "db_name": "db_site18", "db_password": "pass18"}
+    # {"domain": "site1.com", "db_service": "mysql1", "db_name": "db_site1", "db_password": "pass1"},
+    # {"domain": "site2.com", "db_service": "mysql2", "db_name": "db_site2", "db_password": "pass2"},
+    # {"domain": "site3.com", "db_service": "mysql3", "db_name": "db_site3", "db_password": "pass3"},
+    # {"domain": "site4.com", "db_service": "mysql4", "db_name": "db_site4", "db_password": "pass4"},
+    # {"domain": "site5.com", "db_service": "mysql5", "db_name": "db_site5", "db_password": "pass5"},
+    # {"domain": "site6.com", "db_service": "mysql6", "db_name": "db_site6", "db_password": "pass6"},
+    # {"domain": "site7.com", "db_service": "mysql7", "db_name": "db_site7", "db_password": "pass7"},
+    # {"domain": "site8.com", "db_service": "mysql8", "db_name": "db_site8", "db_password": "pass8"},
+    # {"domain": "site9.com", "db_service": "mysql9", "db_name": "db_site9", "db_password": "pass9"},
+    # {"domain": "site10.com", "db_service": "mysql10", "db_name": "db_site10", "db_password": "pass10"},
+    # {"domain": "site11.com", "db_service": "mysql11", "db_name": "db_site11", "db_password": "pass11"},
+    # {"domain": "site12.com", "db_service": "mysql12", "db_name": "db_site12", "db_password": "pass12"},
+    # {"domain": "site13.com", "db_service": "mysql13", "db_name": "db_site13", "db_password": "pass13"},
+    # {"domain": "site14.com", "db_service": "mysql14", "db_name": "db_site14", "db_password": "pass14"},
+    # {"domain": "site15.com", "db_service": "mysql15", "db_name": "db_site15", "db_password": "pass15"},
+    # {"domain": "site16.com", "db_service": "mysql16", "db_name": "db_site16", "db_password": "pass16"},
+    # {"domain": "site17.com", "db_service": "mysql17", "db_name": "db_site17", "db_password": "pass17"},
+    # {"domain": "site18.com", "db_service": "mysql18", "db_name": "db_site18", "db_password": "pass18"}
 ]
 
 # Define master and replicas for ProxySQL (adjust these names to match your Docker service names)
@@ -87,19 +87,27 @@ stack = {
 stack['services']['nginx'] = {
     'image': 'nginx:latest',
     'ports': ['80:80', '443:443'],
+    'depends_on': ['app'],
     'configs': ['nginx_conf'],
-    'networks': ['internal_net'],
+    'networks': {
+        'internal_net': {
+            'aliases': ['app']
+        }
+    },
     'deploy': {
+        'mode': 'replicated',
+        'replicas': 1,
         'placement': {
             'constraints': ['node.role == manager']
         }
     },
     'volumes': [
         './nginx.conf:/etc/nginx/nginx.conf:ro',
-        './ssl:/etc/nginx/ssl:ro',       # Mount generated SSL certs
+        './ssl:/etc/nginx/ssl:ro',
         '/home/logs/nginx:/var/log/nginx'
     ]
 }
+
 stack['configs'] = {
     'nginx_conf': {
         'file': './nginx.conf'
@@ -108,7 +116,7 @@ stack['configs'] = {
 
 # Laravel Application Service (common for all domains)
 stack['services']['app'] = {
-    'image': 'masteransh/laravel-ecommerce-prateek:latest',
+    'image': 'masteransh/laravel-ecommerce-prateek:3',
     'networks': ['internal_net'],
     'deploy': {
         'replicas': 4,
@@ -122,7 +130,7 @@ stack['services']['app'] = {
     },
     'environment': [
         'APP_ENV=production',
-        'APP_DEBUG=false',
+        'APP_DEBUG=true',
         'REDIS_HOST=redis',
         'REDIS_PORT=6379'
     ],
@@ -264,7 +272,7 @@ nginx_conf_lines.append("    access_log /var/log/nginx/access.log;")
 nginx_conf_lines.append("    error_log  /var/log/nginx/error.log;")
 nginx_conf_lines.append("")
 nginx_conf_lines.append("    upstream app_servers {")
-nginx_conf_lines.append("        server ecommerce_stack_app:9000;")
+nginx_conf_lines.append("        server app:9000;")
 nginx_conf_lines.append("    }")
 nginx_conf_lines.append("")
 # For each domain, generate server blocks

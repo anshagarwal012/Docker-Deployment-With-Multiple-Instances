@@ -1,171 +1,335 @@
-import os
-import subprocess
+import os, subprocess, yaml
 
-# Your provided configuration
+# ---------------------------
+# Step 0: Define Domains and Servers
+# ---------------------------
 domains = [
-    "allairx.com", "example2.com", "example3.com", "example4.com",
-    "example5.com", "example6.com", "example7.com", "example8.com",
-    "example9.com", "example10.com", "example11.com", "example12.com",
-    "example13.com", "example14.com", "example15.com", "example16.com",
-    "example17.com", "example18.com", "example19.com", "example20.com"
+    {"domain": "147.93.104.239", "db_service": "mysql19", "db_name": "allairx", "db_password": "WireTrip0908@allairx"},
+    {"domain": "allairx.com",   "db_service": "mysql20", "db_name": "allairx", "db_password": "WireTrip0908@allairx"},
+    # {"domain": "site1.com",     "db_service": "mysql1",  "db_name": "db_site1", "db_password": "pass1"},
+    # {"domain": "site2.com",     "db_service": "mysql2",  "db_name": "db_site2", "db_password": "pass2"},
+    # {"domain": "site3.com",     "db_service": "mysql3",  "db_name": "db_site3", "db_password": "pass3"},
+    # {"domain": "site4.com",     "db_service": "mysql4",  "db_name": "db_site4", "db_password": "pass4"},
+    # {"domain": "site5.com",     "db_service": "mysql5",  "db_name": "db_site5", "db_password": "pass5"},
+    # {"domain": "site6.com",     "db_service": "mysql6",  "db_name": "db_site6", "db_password": "pass6"},
+    # {"domain": "site7.com",     "db_service": "mysql7",  "db_name": "db_site7", "db_password": "pass7"},
+    # {"domain": "site8.com",     "db_service": "mysql8",  "db_name": "db_site8", "db_password": "pass8"},
+    # {"domain": "site9.com",     "db_service": "mysql9",  "db_name": "db_site9", "db_password": "pass9"},
+    # {"domain": "site10.com",    "db_service": "mysql10", "db_name": "db_site10", "db_password": "pass10"},
+    # {"domain": "site11.com",    "db_service": "mysql11", "db_name": "db_site11", "db_password": "pass11"},
+    # {"domain": "site12.com",    "db_service": "mysql12", "db_name": "db_site12", "db_password": "pass12"},
+    # {"domain": "site13.com",    "db_service": "mysql13", "db_name": "db_site13", "db_password": "pass13"},
+    # {"domain": "site14.com",    "db_service": "mysql14", "db_name": "db_site14", "db_password": "pass14"},
+    # {"domain": "site15.com",    "db_service": "mysql15", "db_name": "db_site15", "db_password": "pass15"},
+    # {"domain": "site16.com",    "db_service": "mysql16", "db_name": "db_site16", "db_password": "pass16"},
+    # {"domain": "site17.com",    "db_service": "mysql17", "db_name": "db_site17", "db_password": "pass17"},
+    # {"domain": "site18.com",    "db_service": "mysql18", "db_name": "db_site18", "db_password": "pass18"}
 ]
 
-servers = ["147.93.104.239", "82.29.164.50", "82.29.164.51", "82.29.164.52"]
-laravel_image = "masteransh/laravel-ecommerce-prateek:3"
+# Mapping of server numbers to node labels for placement constraints
+servers = {1: "server1", 2: "server2", 3: "server3", 4: "server4"}
+mysql_root_password = "Devilansh@123"
 
+# ---------------------------
+# Step 1: Generate SSL Certificates
+# ---------------------------
 def is_ip(domain):
-    return all(part.isdigit() for part in domain.split('.'))
+    try:
+        parts = domain.split('.')
+        return all(part.isdigit() for part in parts)
+    except Exception:
+        return False
 
-def generate_ssl():
-    ssl_dir = "ssl"
-    os.makedirs(ssl_dir, exist_ok=True)
-    
-    for domain in domains:
-        if not is_ip(domain):
-            cert_file = os.path.join(ssl_dir, f"{domain}.crt")
-            key_file = os.path.join(ssl_dir, f"{domain}.key")
-            if not os.path.exists(cert_file):
-                print(f"Generating SSL certificate for {domain}...")
-                cmd = (f"openssl req -x509 -nodes -days 365 -newkey rsa:2048 "
-                       f"-subj '/CN={domain}' -keyout {key_file} -out {cert_file}")
-                subprocess.run(cmd, shell=True, check=True)
-            else:
-                print(f"SSL certificate for {domain} already exists.")
+ssl_dir = "./ssl"
+if not os.path.exists(ssl_dir):
+    os.makedirs(ssl_dir)
 
-def generate_nginx_conf():
-    nginx_dir = "nginx"
-    os.makedirs(nginx_dir, exist_ok=True)
-    config_path = os.path.join(nginx_dir, "nginx.conf")
-    
-    nginx_config = """
-worker_processes auto;
-events { worker_connections 1024; }
-http {
-    include mime.types;
-    sendfile on;
-    keepalive_timeout 65;
-"""
-    # Create a server block for each domain
-    for domain in domains:
-        nginx_config += f"""
-    server {{
-        listen 80;
-        listen 443 ssl;
-        server_name {domain};
-        
-        ssl_certificate /etc/nginx/certs/{domain}.crt;
-        ssl_certificate_key /etc/nginx/certs/{domain}.key;
-        
-        location / {{
-            proxy_pass http://laravel_app:9000;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-        }}
-    }}
-"""
-    nginx_config += "\n}"
-    with open(config_path, "w") as file:
-        file.write(nginx_config)
-    print("nginx.conf created successfully.")
+for item in domains:
+    d = item["domain"]
+    if not is_ip(d):
+        cert_file = os.path.join(ssl_dir, f"{d}.crt")
+        key_file = os.path.join(ssl_dir, f"{d}.key")
+        if not (os.path.exists(cert_file) and os.path.exists(key_file)):
+            print(f"Generating SSL certificate for {d}...")
+            cmd = f"openssl req -x509 -nodes -days 365 -newkey rsa:2048 -subj '/CN={d}' -keyout {key_file} -out {cert_file}"
+            subprocess.run(cmd, shell=True, check=True)
+        else:
+            print(f"Certificate for {d} already exists.")
 
-def generate_docker_stack():
-    # Use your provided laravel_image variable in the service definition
-    stack_config = f"""
-version: '3.8'
+# ---------------------------
+# Step 2: Group Domains for MySQL (4 instances)
+# ---------------------------
+mysql_groups = {1: [], 2: [], 3: [], 4: []}
+for idx, item in enumerate(domains, start=1):
+    group = ((idx - 1) % 4) + 1
+    mysql_groups[group].append(item)
 
-services:
-  laravel_app:
-    image: {laravel_image}
-    deploy:
-      replicas: 20
-      placement:
-        constraints: [node.role == worker]
-    environment:
-      APP_ENV: production
-      DB_CONNECTION: mysql
-      DB_HOST: proxysql
-      DB_PORT: 6033
-      DB_USERNAME: laravel
-      DB_PASSWORD: your_password
-    networks:
-      - laravel_network
-    volumes:
-      - /var/www/html
+# Generate an init SQL file for each MySQL instance (to create multiple databases)
+for group, items in mysql_groups.items():
+    filename = f"init-mysql{group}.sql"
+    sql_content = ""
+    for item in items:
+        # Create the database; assume db_name is unique per domain
+        db_name = item["db_name"]
+        sql_content += f"CREATE DATABASE IF NOT EXISTS {db_name};\n"
+    with open(filename, "w") as f:
+        f.write(sql_content)
+    print(f"{filename} generated successfully.")
 
-  proxysql:
-    image: proxysql/proxysql:latest
-    networks:
-      - laravel_network
-    ports:
-      - "6032:6032"
-      - "6033:6033"
-    volumes:
-      - ./proxysql/proxysql.cnf:/etc/proxysql.cnf
+# ---------------------------
+# Step 3: Generate Docker Swarm Stack File (docker-stack.yml)
+# ---------------------------
+stack = {
+    'version': '3.8',
+    'networks': {
+        'internal_net': {
+            'driver': 'overlay',
+            'internal': True
+        }
+    },
+    'services': {},
+    'volumes': {}
+}
 
-  nginx:
-    image: nginx:latest
-    ports:
-      - "80:80"
-      - "443:443"
-    networks:
-      - laravel_network
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./ssl:/etc/nginx/certs
-    depends_on:
-      - laravel_app
+# Nginx Service (config file in root)
+stack['services']['nginx'] = {
+    'image': 'nginx:latest',
+    'ports': ['80:80', '443:443'],
+    'configs': ['nginx_conf'],
+    'networks': ['internal_net'],
+    'deploy': {
+        'placement': {
+            'constraints': ['node.role == manager']
+        }
+    },
+    'volumes': [
+        './nginx.conf:/etc/nginx/nginx.conf:ro',
+        './ssl:/etc/nginx/ssl:ro'
+    ]
+}
+stack['configs'] = {
+    'nginx_conf': {
+        'file': './nginx.conf'
+    }
+}
 
-  redis:
-    image: redis:latest
-    networks:
-      - laravel_network
+# Laravel Application Service
+stack['services']['app'] = {
+    'image': 'masteransh/laravel-ecommerce-prateek:3',
+    'networks': ['internal_net'],
+    'deploy': {
+        'replicas': 4,
+        'update_config': {
+            'parallelism': 2,
+            'delay': '10s'
+        },
+        'restart_policy': {
+            'condition': 'any'
+        }
+    },
+    'environment': [
+        'APP_ENV=production',
+        'APP_DEBUG=false',
+        'REDIS_HOST=redis',
+        'REDIS_PORT=6379'
+    ],
+    'expose': ['9000'],
+    'volumes': ['laravel_code:/var/www/html']
+}
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest
-    environment:
-      PMA_HOST: proxysql
-      PMA_PORT: 6033
-    ports:
-      - "8080:80"
-    networks:
-      - laravel_network
-    depends_on:
-      - proxysql
+# Create 4 MySQL Services (one per server), mounting the corresponding init SQL file
+for i in range(1, 5):
+    service_name = f"mysql{i}"
+    stack['services'][service_name] = {
+        'image': 'mysql:8.0',
+        'environment': {
+            'MYSQL_ROOT_PASSWORD': mysql_root_password
+        },
+        'volumes': [
+            f'{service_name}_data:/var/lib/mysql',
+            f'./init-mysql{i}.sql:/docker-entrypoint-initdb.d/init.sql:ro'
+        ],
+        'networks': ['internal_net'],
+        'deploy': {
+            'placement': {
+                'constraints': [f'node.labels.db == {servers[i]}']
+            }
+        }
+    }
+    stack['volumes'][f'{service_name}_data'] = None
 
-networks:
-  laravel_network:
-    driver: overlay
-"""
-    with open("docker-stack.yml", "w") as file:
-        file.write(stack_config)
-    print("docker-stack.yml created successfully.")
+# ProxySQL Service: list the 4 MySQL services as backends
+proxysql_config = (
+    'datadir="/var/lib/proxysql"\n\n'
+    'admin_variables =\n'
+    '{\n'
+    '    admin_credentials="admin:admin"\n'
+    '    mysql_ifaces="0.0.0.0:6032"\n'
+    '}\n\n'
+    'mysql_variables =\n'
+    '{\n'
+    '    threads=4\n'
+    '}\n\n'
+    'mysql_servers =\n'
+    '(\n'
+)
+for i in range(1, 5):
+    proxysql_config += f'    {{ address="mysql{i}", port=3306, hostgroup_id=0, max_connections=100 }},\n'
+proxysql_config += ')\n\n'
+proxysql_config += 'mysql_users =\n(\n'
+proxysql_config += '    { username="user", password="pass", default_hostgroup=0, transaction_persistent=false }\n'
+proxysql_config += ')\n\n'
+proxysql_config += 'mysql_query_rules =\n(\n'
+proxysql_config += '    { rule_id=1, active=1, match_pattern="^SELECT", destination_hostgroup=1, apply=1 },\n'
+proxysql_config += '    { rule_id=2, active=1, match_pattern=".*", destination_hostgroup=0, apply=1 }\n'
+proxysql_config += ')\n'
 
-def generate_proxysql_config():
-    proxysql_dir = "proxysql"
-    os.makedirs(proxysql_dir, exist_ok=True)
-    config_path = os.path.join(proxysql_dir, "proxysql.cnf")
-    
-    # Use your servers list to generate mysql_servers entries
-    proxysql_config = "[mysql_servers]\n"
-    for server in servers:
-        proxysql_config += f"{{ address=\"{server}\", port=3306, hostgroup_id=0, max_connections=100 }}\n"
-    proxysql_config += "\n[mysql_users]\n"
-    proxysql_config += "user = \"laravel\"\n"
-    proxysql_config += "password = \"your_password\"\n"
-    proxysql_config += "\ndefault_hostgroup = 0\n"
-    
-    with open(config_path, "w") as file:
-        file.write(proxysql_config)
-    print("proxysql.cnf created successfully.")
+with open('proxysql.cnf', 'w') as f:
+    f.write(proxysql_config)
+print("proxysql.cnf generated successfully.")
 
-def main():
-    generate_ssl()
-    generate_nginx_conf()
-    generate_docker_stack()
-    generate_proxysql_config()
-    print("All configuration files created successfully.")
+stack['services']['proxysql'] = {
+    'image': 'proxysql/proxysql:latest',
+    'ports': [
+        "6032:6032",  # Admin interface
+        "6034:6033"   # Map host port 6034 to container port 6033
+    ],
+    'networks': ['internal_net'],
+    'depends_on': [],
+    'volumes': ['./proxysql.cnf:/etc/proxysql.cnf:ro'],
+    'deploy': {
+        'replicas': 1
+    }
+}
 
-if __name__ == "__main__":
-    main()
+# Redis Service
+stack['services']['redis'] = {
+    'image': 'redis:alpine',
+    'container_name': 'redis',
+    'restart': 'always',
+    'networks': ['internal_net'],
+    'ports': ['6379:6379']
+}
+
+# phpMyAdmin Service: using ProxySQL for connectivity
+stack['services']['phpmyadmin'] = {
+    'image': 'phpmyadmin/phpmyadmin:latest',
+    'container_name': 'phpmyadmin',
+    'restart': 'always',
+    'depends_on': ['proxysql'],
+    'networks': ['internal_net'],
+    'environment': {
+        'PMA_HOST': 'proxysql',
+        'PMA_PORT': '6033',
+        'MYSQL_ROOT_PASSWORD': mysql_root_password
+    },
+    'ports': ['8080:80']
+}
+
+# Persistent volume for Laravel code
+stack['volumes']['laravel_code'] = None
+
+with open('docker-stack.yml', 'w') as f:
+    yaml.dump(stack, f, default_flow_style=False)
+print("docker-stack.yml generated successfully!")
+
+# ---------------------------
+# Step 4: Generate Nginx Configuration (nginx.conf)
+# ---------------------------
+nginx_conf_lines = []
+nginx_conf_lines.append("worker_processes auto;")
+nginx_conf_lines.append("")
+nginx_conf_lines.append("events {")
+nginx_conf_lines.append("    worker_connections 1024;")
+nginx_conf_lines.append("}")
+nginx_conf_lines.append("")
+nginx_conf_lines.append("http {")
+nginx_conf_lines.append("    include       /etc/nginx/mime.types;")
+nginx_conf_lines.append("    default_type  application/octet-stream;")
+# nginx_conf_lines.append("")
+# nginx_conf_lines.append("    resolver 127.0.0.11 valid=30s;")
+# nginx_conf_lines.append("    resolver_timeout 5s;")
+nginx_conf_lines.append("")
+nginx_conf_lines.append("    sendfile        on;")
+nginx_conf_lines.append("    keepalive_timeout 65;")
+nginx_conf_lines.append("    access_log /var/log/nginx/access.log;")
+nginx_conf_lines.append("    error_log  /var/log/nginx/error.log;")
+nginx_conf_lines.append("")
+nginx_conf_lines.append("    upstream app_servers {")
+nginx_conf_lines.append("        server app:9000;")
+nginx_conf_lines.append("    }")
+nginx_conf_lines.append("")
+for item in domains:
+    d = item["domain"]
+    if any(part.isalpha() for part in d.split('.')):  # Hostnames get SSL and redirection
+        # HTTP block: redirect to HTTPS
+        nginx_conf_lines.append("    server {")
+        nginx_conf_lines.append("        listen 80;")
+        nginx_conf_lines.append(f"        server_name {d} www.{d};")
+        nginx_conf_lines.append("        return 301 https://$host$request_uri;")
+        nginx_conf_lines.append("    }")
+        nginx_conf_lines.append("")
+        # HTTPS block with SSL
+        nginx_conf_lines.append("    server {")
+        nginx_conf_lines.append("        listen 443 ssl;")
+        nginx_conf_lines.append(f"        server_name {d} www.{d};")
+        nginx_conf_lines.append("")
+        nginx_conf_lines.append(f"        ssl_certificate /etc/nginx/ssl/{d}.crt;")
+        nginx_conf_lines.append(f"        ssl_certificate_key /etc/nginx/ssl/{d}.key;")
+        nginx_conf_lines.append("")
+        nginx_conf_lines.append("        root /var/www/html/public;")
+        nginx_conf_lines.append("        index index.php index.html;")
+        nginx_conf_lines.append("")
+        nginx_conf_lines.append("        location / {")
+        nginx_conf_lines.append("            try_files $uri $uri/ /index.php?$query_string;")
+        nginx_conf_lines.append("        }")
+        nginx_conf_lines.append("")
+        nginx_conf_lines.append("        location ~* \\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {")
+        nginx_conf_lines.append("            try_files $uri =404;")
+        nginx_conf_lines.append("            expires max;")
+        nginx_conf_lines.append("            log_not_found off;")
+        nginx_conf_lines.append("            access_log off;")
+        nginx_conf_lines.append("        }")
+        nginx_conf_lines.append("")
+        nginx_conf_lines.append("        location ~ \\.php$ {")
+        nginx_conf_lines.append("            include fastcgi_params;")
+        nginx_conf_lines.append("            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;")
+        nginx_conf_lines.append("            fastcgi_pass app_servers;")
+        nginx_conf_lines.append("        }")
+        nginx_conf_lines.append("")
+        nginx_conf_lines.append("        error_page 404 /index.php;")
+        nginx_conf_lines.append("    }")
+        nginx_conf_lines.append("")
+    else:
+        # For IP addresses, only HTTP block (no SSL)
+        nginx_conf_lines.append("    server {")
+        nginx_conf_lines.append("        listen 80;")
+        nginx_conf_lines.append(f"        server_name {d};")
+        nginx_conf_lines.append("")
+        nginx_conf_lines.append("        root /var/www/html/public;")
+        nginx_conf_lines.append("        index index.php index.html;")
+        nginx_conf_lines.append("")
+        nginx_conf_lines.append("        location / {")
+        nginx_conf_lines.append("            try_files $uri $uri/ /index.php?$query_string;")
+        nginx_conf_lines.append("        }")
+        nginx_conf_lines.append("")
+        nginx_conf_lines.append("        location ~* \\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {")
+        nginx_conf_lines.append("            try_files $uri =404;")
+        nginx_conf_lines.append("            expires max;")
+        nginx_conf_lines.append("            log_not_found off;")
+        nginx_conf_lines.append("            access_log off;")
+        nginx_conf_lines.append("        }")
+        nginx_conf_lines.append("")
+        nginx_conf_lines.append("        location ~ \\.php$ {")
+        nginx_conf_lines.append("            include fastcgi_params;")
+        nginx_conf_lines.append("            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;")
+        nginx_conf_lines.append("            fastcgi_pass app_servers;")
+        nginx_conf_lines.append("        }")
+        nginx_conf_lines.append("")
+        nginx_conf_lines.append("        error_page 404 /index.php;")
+        nginx_conf_lines.append("    }")
+        nginx_conf_lines.append("")
+nginx_conf_lines.append("}")
+with open('nginx.conf', 'w') as f:
+    f.write("\n".join(nginx_conf_lines))
+print("nginx.conf generated successfully!")

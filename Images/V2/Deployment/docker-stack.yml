@@ -16,7 +16,7 @@ services:
         parallelism: 2
     environment:
     - APP_ENV=production
-    - APP_DEBUG=true
+    - APP_DEBUG=false
     - REDIS_HOST=redis
     - REDIS_PORT=6379
     expose:
@@ -26,67 +26,82 @@ services:
     - internal_net
     volumes:
     - laravel_code:/var/www/html
-  mysql19:
+  mysql1:
     deploy:
       placement:
         constraints:
         - node.labels.db == server1
     environment:
-      MYSQL_DATABASE: allairx
-      MYSQL_PASSWORD: WireTrip0908@allairx
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_USER: user
+      MYSQL_ROOT_PASSWORD: Devilansh@123
     image: mysql:8.0
     networks:
     - internal_net
     volumes:
-    - mysql19_data:/var/lib/mysql
-  mysql20:
+    - mysql1_data:/var/lib/mysql
+    - ./init-mysql1.sql:/docker-entrypoint-initdb.d/init.sql:ro
+  mysql2:
     deploy:
       placement:
         constraints:
         - node.labels.db == server2
     environment:
-      MYSQL_DATABASE: allairx
-      MYSQL_PASSWORD: WireTrip0908@allairx
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_USER: user
+      MYSQL_ROOT_PASSWORD: Devilansh@123
     image: mysql:8.0
     networks:
     - internal_net
     volumes:
-    - mysql20_data:/var/lib/mysql
+    - mysql2_data:/var/lib/mysql
+    - ./init-mysql2.sql:/docker-entrypoint-initdb.d/init.sql:ro
+  mysql3:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server3
+    environment:
+      MYSQL_ROOT_PASSWORD: Devilansh@123
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql3_data:/var/lib/mysql
+    - ./init-mysql3.sql:/docker-entrypoint-initdb.d/init.sql:ro
+  mysql4:
+    deploy:
+      placement:
+        constraints:
+        - node.labels.db == server4
+    environment:
+      MYSQL_ROOT_PASSWORD: Devilansh@123
+    image: mysql:8.0
+    networks:
+    - internal_net
+    volumes:
+    - mysql4_data:/var/lib/mysql
+    - ./init-mysql4.sql:/docker-entrypoint-initdb.d/init.sql:ro
   nginx:
     configs:
     - nginx_conf
-    depends_on:
-    - app
     deploy:
-      mode: replicated
       placement:
         constraints:
         - node.role == manager
-      replicas: 1
     image: nginx:latest
     networks:
-      internal_net:
-        aliases:
-        - app
+    - internal_net
     ports:
     - 80:80
     - 443:443
     volumes:
     - ./nginx.conf:/etc/nginx/nginx.conf:ro
     - ./ssl:/etc/nginx/ssl:ro
-    - /home/logs/nginx:/var/log/nginx
   phpmyadmin:
     container_name: phpmyadmin
     depends_on:
-    - mysql19
+    - proxysql
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      PMA_HOST: mysql19
-      PMA_PORT: '3306'
+      MYSQL_ROOT_PASSWORD: Devilansh@123
+      PMA_HOST: proxysql
+      PMA_PORT: '6033'
     image: phpmyadmin/phpmyadmin:latest
     networks:
     - internal_net
@@ -116,5 +131,7 @@ services:
 version: '3.8'
 volumes:
   laravel_code: null
-  mysql19_data: null
-  mysql20_data: null
+  mysql1_data: null
+  mysql2_data: null
+  mysql3_data: null
+  mysql4_data: null
